@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/unpunnyfuns/faro-tanstack-router/compare/v1.0.2...v1.0.3) (2026-07-30)
+
+
+### Bug Fixes
+
+* report the error value matching its errorSource classification ([643e500](https://github.com/unpunnyfuns/faro-tanstack-router/commit/643e500d7a0a47a8070fbaec68cf7cda01584fde))
+
 ## [1.0.2](https://github.com/unpunnyfuns/faro-tanstack-router/compare/v1.0.1...v1.0.2) (2026-07-30)
 
 
