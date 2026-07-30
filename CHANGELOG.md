@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/unpunnyfuns/faro-tanstack-router/compare/v1.0.0...v1.0.1) (2026-07-30)
+
+
+### Bug Fixes
+
+* declare sideEffects false so bundlers can tree-shake ([f62afdd](https://github.com/unpunnyfuns/faro-tanstack-router/commit/f62afddbda50cbe47d28ee7cc175b500fe6f6bf9))
+
 # 1.0.0 (2026-07-30)
 
 

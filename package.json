@@ -1,6 +1,6 @@
 {
   "name": "@unpunnyfuns/faro-tanstack-router",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Grafana Faro instrumentation for TanStack Router",
   "license": "MIT",
   "author": "unpunnyfuns",
