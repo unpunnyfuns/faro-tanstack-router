@@ -1,0 +1,51 @@
+{
+  "name": "faro-tanstack-router",
+  "version": "0.1.0",
+  "description": "Grafana Faro instrumentation for TanStack Router",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "faro",
+    "grafana",
+    "tanstack",
+    "router",
+    "rum",
+    "observability"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "oxlint src",
+    "format": "oxfmt src",
+    "typecheck": "tsc --noEmit"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "devDependencies": {
+    "@grafana/faro-web-sdk": "^2.9.0",
+    "@tanstack/router-core": "^1.171.15",
+    "jsdom": "^30.0.1",
+    "oxfmt": "^0.61.0",
+    "oxlint": "^1.76.0",
+    "tsup": "^8.5.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "peerDependencies": {
+    "@grafana/faro-web-sdk": "^2.9.0",
+    "@tanstack/router-core": "^1.171.15"
+  }
+}
