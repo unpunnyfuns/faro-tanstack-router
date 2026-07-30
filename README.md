@@ -11,7 +11,8 @@ failed route matches, for SPA and SSR.
 | `withFaroRouterInstrumentation` | function | Wrap a router instance to subscribe to navigation |
 | `TanStackRouterInstrumentationOptions` | type | `captureRouteErrors`, `shouldReportRoute` |
 
-Both touchpoints are required, and the order between them does not matter.
+Both calls are required. Where each one goes depends on whether you are running a SPA or
+SSR — see the setup below.
 
 ## Install
 
@@ -44,9 +45,14 @@ export function App() {
 }
 ```
 
+In a SPA both calls sit in the same file, and their order does not matter.
+
 ## TanStack Start
 
+SSR needs the same two calls, but in different places. Wrap the router in `getRouter`:
+
 ```tsx
+// src/router.tsx
 import { createRouter } from "@tanstack/react-router";
 import { withFaroRouterInstrumentation } from "@unpunnyfuns/faro-tanstack-router";
 
@@ -59,6 +65,26 @@ export function getRouter() {
 
 `getRouter` runs on the server too. The wrapper returns the router untouched when
 `router.isServer` is true, so no subscription and no telemetry happen server-side.
+
+Then initialise Faro on the client only, because `initializeFaro` needs `window`:
+
+```tsx
+// src/routes/__root.tsx
+import { getWebInstrumentations, initializeFaro } from "@grafana/faro-web-sdk";
+import { TanStackRouterInstrumentation } from "@unpunnyfuns/faro-tanstack-router";
+
+if (typeof window !== "undefined") {
+  initializeFaro({
+    url: import.meta.env.VITE_FARO_URL,
+    app: { name: "my-app", version: "1.0.0" },
+    instrumentations: [...getWebInstrumentations(), new TanStackRouterInstrumentation()],
+  });
+}
+```
+
+❌ Wrapping the router without registering the instrumentation is the common mistake. The
+wrapper subscribes on hydration, finds Faro uninitialised, and drops every event after a
+single `console.warn`.
 
 ## Options
 
