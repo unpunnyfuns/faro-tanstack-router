@@ -41,7 +41,7 @@ version semantic-release writes into `package.json`. Do not edit it by hand.
 
 ## Design notes
 
-### Why the API has two touchpoints
+### Why setup needs two separate calls
 
 `withFaroRouterInstrumentation` cannot reach Faro's `api` on its own. Faro hands that to an
 instrumentation only after `initializeFaro()` runs, so registering
