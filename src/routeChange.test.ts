@@ -26,6 +26,10 @@ describe("resolveRoute", () => {
   it("falls back to the pathname when there are no matches", () => {
     expect(resolveRoute([], "/posts/42")).toBe("/posts/42");
   });
+
+  it("falls back to the pathname when the leaf match has no route pattern", () => {
+    expect(resolveRoute([match({ fullPath: "" })], "/posts/42")).toBe("/posts/42");
+  });
 });
 
 describe("buildRouteChangeAttributes", () => {

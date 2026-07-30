@@ -70,6 +70,18 @@ describe("createRouteErrorReporter", () => {
     });
   });
 
+  it("reports the value matching the classification when several errors are set", () => {
+    createRouteErrorReporter()(api, [
+      match({
+        paramsError: new Error("params failed"),
+        error: new Error("loader failed"),
+      }),
+    ]);
+
+    expect(pushError.mock.calls[0]?.[1].context.errorSource).toBe("params");
+    expect(pushError.mock.calls[0]?.[0].message).toBe("params failed");
+  });
+
   it("describes the route when a failed match carries no error value", () => {
     createRouteErrorReporter()(api, [match({ status: "error" })]);
 

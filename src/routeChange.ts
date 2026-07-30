@@ -14,8 +14,12 @@ export interface RouteChangeInput {
   previous: RouteTransition;
 }
 
+// Layout and pathless routes can carry an empty fullPath, which would be
+// reported as an empty toRoute. Fall back to the concrete pathname instead.
 export function resolveRoute(matches: InstrumentableMatch[], fallbackPathname: string): string {
-  return matches.at(-1)?.fullPath ?? fallbackPathname;
+  const leafRoute = matches.at(-1)?.fullPath;
+
+  return leafRoute === undefined || leafRoute === "" ? fallbackPathname : leafRoute;
 }
 
 function currentUrl(): string {
