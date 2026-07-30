@@ -58,6 +58,19 @@ export function getRouter() {
 `getRouter` runs on the server too. The wrapper returns the router untouched when
 `router.isServer` is true, so no subscription and no telemetry happen server-side.
 
+## Why two touchpoints
+
+`withFaroRouterInstrumentation` cannot reach Faro's api on its own — Faro hands that to an
+instrumentation only after `initializeFaro()` has run. Registering the instrumentation is
+what supplies it. This mirrors how `@grafana/faro-react` sets up its data router.
+
+Passing the router into the instrumentation config instead would not work for TanStack
+Start, whose convention is an exported `getRouter()` factory the framework calls per
+request. No router instance exists at `initializeFaro()` time, so config-only would mean two
+different setup stories for SPA and SSR. Wrapping the router keeps them the same.
+
+The two calls are order-independent.
+
 ## Options
 
 ```ts
@@ -109,6 +122,15 @@ redirects collapses into a single `route_change` landing on the final route.
 ❌ Route errors are not filtered by navigation type. A loader failure during a replace is
 still reported even though no `route_change` is emitted.
 
+### How the navigation type is determined
+
+TanStack does not carry the history action on its router events. It is recovered from
+`__TSR_index`, which `@tanstack/history` writes into location state positionally: `push`
+stores `currentIndex + 1`, `replace` stores `currentIndex` unchanged. Comparing the index on
+`fromLocation` and `toLocation` gives the action with no extra subscription.
+
+A delta of `0` is a replace. Anything else is a push, back, or forward.
+
 ## Using with React
 
 `@grafana/faro-react` provides the error boundary and component profiler, and both are
@@ -132,6 +154,22 @@ instrumentations: [
 Instrumentation targets `@tanstack/router-core`, which the React, Solid, and Vue adapters
 all share. Router types are declared structurally rather than imported, so TanStack type
 changes do not break the build.
+
+`src/integration.test.ts` is what verifies those structural types still match a real router.
+If TanStack changes shape, that test is where it surfaces.
+
+## Development
+
+```bash
+pnpm install
+pnpm test
+pnpm lint
+pnpm typecheck
+pnpm build
+```
+
+`src/version.ts` is hand-synced with the `version` field in `package.json`. Update both
+together.
 
 ## License
 
