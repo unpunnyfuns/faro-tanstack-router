@@ -155,6 +155,39 @@ instrumentations: [
 ❌ Do not pass `createReactRouterV6Options`, or `withFaroRouterInstrumentation` from
 `@grafana/faro-react`. This package replaces the router half only.
 
+## Migrating from React Router
+
+The setup is the same shape as Faro's React Router data router — the same two calls, and the
+second keeps its name. Only the config call changes:
+
+```diff
+ initializeFaro({
+   instrumentations: [
+     ...getWebInstrumentations(),
+-    new ReactIntegration({
+-      router: createReactRouterV6DataOptions({ matchRoutes }),
+-    }),
++    new ReactIntegration(),
++    new TanStackRouterInstrumentation(),
+   ],
+ });
+
+-const router = withFaroRouterInstrumentation(createBrowserRouter(routes));
++const router = withFaroRouterInstrumentation(createRouter({ routeTree }));
+```
+
+Import `withFaroRouterInstrumentation` from this package rather than from
+`@grafana/faro-react`, and keep `ReactIntegration` registered without a `router` option so the
+error boundary and profiler keep working.
+
+No router internals need injecting. `@grafana/faro-react` requires `matchRoutes` — and up to
+five imports for the non-data-router setup — because it reconstructs the route pattern from
+the URL. TanStack's matches already carry it, so the config call takes only behaviour options
+and is optional entirely.
+
+Events keep the same `route_change` name and the same `toRoute` / `toUrl` / `fromRoute` /
+`fromUrl` attributes, so existing dashboards and queries continue to work.
+
 ## Framework support
 
 Instrumentation targets `@tanstack/router-core`, which the React, Solid and Vue adapters all
