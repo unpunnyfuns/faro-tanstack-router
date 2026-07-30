@@ -166,7 +166,13 @@ npm test
 npm run lint
 npm run typecheck
 npm run build
+npm run check:exports
 ```
+
+`check:exports` runs [publint](https://publint.dev/) and
+[@arethetypeswrong/cli](https://arethetypeswrong.github.io/) against a packed tarball, so a
+broken `exports` map or a mismatched `.d.mts`/`.d.cts` pairing fails in CI rather than after
+publishing. It requires `npm run build` first.
 
 ### Releases
 
