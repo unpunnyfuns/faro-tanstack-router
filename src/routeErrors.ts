@@ -31,6 +31,19 @@ function firstPresent(...values: unknown[]): unknown {
   return values.find(isPresent);
 }
 
+// A match can settle into an error status without any of the three error
+// fields being populated. Reporting String(undefined) would send Faro an
+// exception whose message is the literal text "undefined".
+function toRouteError(match: InstrumentableMatch): Error {
+  const value = firstPresent(match.error, match.paramsError, match.searchError);
+
+  if (value === undefined) {
+    return new Error(`Route ${match.fullPath} failed without an error value`);
+  }
+
+  return toError(value);
+}
+
 export function createRouteErrorReporter(
   maxSeenKeys: number = DEFAULT_MAX_SEEN_KEYS,
 ): RouteErrorReporter {
@@ -62,7 +75,7 @@ export function createRouteErrorReporter(
 
       remember(key);
 
-      api.pushError(toError(firstPresent(match.error, match.paramsError, match.searchError)), {
+      api.pushError(toRouteError(match), {
         type: "TanStackRouterError",
         context: {
           route: match.fullPath,
