@@ -12,10 +12,10 @@ jobs:
   release:
     name: Test and release
     runs-on: ubuntu-latest
+    # The default GITHUB_TOKEN only clones. Writes to the repo go through the
+    # app token, and publishing authenticates to npm via id-token.
     permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+      contents: read
       id-token: write
     steps:
       - name: Checkout
@@ -52,10 +52,20 @@ jobs:
       - name: Check published exports
         run: npm run check:exports
 
+      # The default GITHUB_TOKEN cannot bypass a ruleset, so the release
+      # commit from @semantic-release/git would be rejected on protected main.
+      # github-actions[bot] is not an eligible bypass actor; a GitHub App is.
+      - name: Generate a token for the release app
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       # No NPM_TOKEN. Publishing authenticates via OIDC trusted publishing,
       # which needs the id-token: write permission granted above. This also
       # makes npm attach a signed provenance statement to each release.
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         run: npx semantic-release
