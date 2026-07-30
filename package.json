@@ -31,6 +31,7 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -52,9 +53,11 @@
     "lint": "oxlint src",
     "format": "oxfmt src",
     "typecheck": "tsc --noEmit",
+    "check:exports": "publint --strict && attw --pack .",
     "sync-version": "node scripts/sync-version.mjs"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@grafana/faro-web-sdk": "^2.9.0",
     "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/exec": "^7.1.0",
@@ -67,6 +70,7 @@
     "jsdom": "^30.0.1",
     "oxfmt": "^0.61.0",
     "oxlint": "^1.76.0",
+    "publint": "^0.3.22",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "semantic-release": "^25.0.8",
