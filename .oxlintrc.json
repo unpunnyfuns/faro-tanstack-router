@@ -2,5 +2,8 @@
   "categories": {
     "correctness": "error",
     "suspicious": "warn"
+  },
+  "rules": {
+    "no-underscore-dangle": ["warn", { "allow": ["__TSR_index"] }]
   }
 }
