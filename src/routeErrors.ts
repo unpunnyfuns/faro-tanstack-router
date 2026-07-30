@@ -31,11 +31,13 @@ function firstPresent(...values: unknown[]): unknown {
   return values.find(isPresent);
 }
 
-// A match can settle into an error status without any of the three error
-// fields being populated. Reporting String(undefined) would send Faro an
-// exception whose message is the literal text "undefined".
+// Precedence matches getErrorSource, so the reported value always describes
+// the same failure the errorSource context labels. A match can also settle
+// into an error status with none of the three fields populated; reporting
+// String(undefined) would send Faro an exception whose message is the
+// literal text "undefined".
 function toRouteError(match: InstrumentableMatch): Error {
-  const value = firstPresent(match.error, match.paramsError, match.searchError);
+  const value = firstPresent(match.paramsError, match.searchError, match.error);
 
   if (value === undefined) {
     return new Error(`Route ${match.fullPath} failed without an error value`);

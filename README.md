@@ -11,6 +11,8 @@ failed route matches, for SPA and SSR.
 | `withFaroRouterInstrumentation` | function | Wrap a router instance to subscribe to navigation |
 | `TanStackRouterInstrumentationOptions` | type | `captureRouteErrors`, `shouldReportRoute` |
 
+Both touchpoints are required, and the order between them does not matter.
+
 ## Install
 
 ```bash
@@ -58,19 +60,6 @@ export function getRouter() {
 `getRouter` runs on the server too. The wrapper returns the router untouched when
 `router.isServer` is true, so no subscription and no telemetry happen server-side.
 
-## Why two touchpoints
-
-`withFaroRouterInstrumentation` cannot reach Faro's api on its own — Faro hands that to an
-instrumentation only after `initializeFaro()` has run. Registering the instrumentation is
-what supplies it. This mirrors how `@grafana/faro-react` sets up its data router.
-
-Passing the router into the instrumentation config instead would not work for TanStack
-Start, whose convention is an exported `getRouter()` factory the framework calls per
-request. No router instance exists at `initializeFaro()` time, so config-only would mean two
-different setup stories for SPA and SSR. Wrapping the router keeps them the same.
-
-The two calls are order-independent.
-
 ## Options
 
 ```ts
@@ -83,7 +72,10 @@ new TanStackRouterInstrumentation({
 | Option | Default | Purpose |
 | --- | --- | --- |
 | `captureRouteErrors` | `true` | Report failed route matches via `pushError` |
-| `shouldReportRoute` | reports everything | Receives the resolved route pattern; return `false` to drop both the event and its errors |
+| `shouldReportRoute` | reports everything | Return `false` to drop both the event and its errors |
+
+`shouldReportRoute` receives the resolved route pattern, such as `/posts/$postId`. When no
+route matches, it receives the concrete pathname instead.
 
 ## Signals
 
@@ -99,37 +91,25 @@ new TanStackRouterInstrumentation({
 
 ### Route errors
 
-Failed matches are reported with `pushError` under type `TanStackRouterError`, with
-`route`, `url`, `errorSource` (`params` / `search` / `load`), and `cause`
-(`preload` / `enter` / `stay`) in context.
+Failed matches are reported with `pushError` under type `TanStackRouterError`, with `route`,
+`url`, `errorSource` (`params` / `search` / `load`) and `cause` (`preload` / `enter` / `stay`)
+in context.
 
-TanStack's `errorComponent` catches loader failures itself, so they never reach a React
-error boundary. This is the only way they reach Faro.
+TanStack's `errorComponent` catches loader failures itself, so they never reach a React error
+boundary. This package is the only way they reach Faro.
 
-## Behaviour notes
+## Behaviour
 
-✅ PUSH, BACK, and FORWARD navigations emit `route_change`.
+✅ PUSH, BACK and FORWARD navigations emit `route_change`.
 
-❌ REPLACE navigations do not. TanStack treats typed search params as the idiomatic place to
-hold UI state, so a debounced filter panel calling `navigate({ replace: true })` would
-otherwise emit an event per keystroke. This matches `@grafana/faro-react`, which reports
-only PUSH and POP.
+❌ REPLACE navigations do not. This matches `@grafana/faro-react`, which reports only PUSH and
+POP, and keeps search-parameter updates made with `navigate({ replace: true })` from emitting
+an event per change.
 
-✅ Redirects still emit exactly one event. TanStack applies `throw redirect(...)` as a
-replace, but `resolvedLocation` only advances once a navigation settles, so a push that
-redirects collapses into a single `route_change` landing on the final route.
+✅ Redirects emit exactly one event, landing on the final route.
 
-❌ Route errors are not filtered by navigation type. A loader failure during a replace is
-still reported even though no `route_change` is emitted.
-
-### How the navigation type is determined
-
-TanStack does not carry the history action on its router events. It is recovered from
-`__TSR_index`, which `@tanstack/history` writes into location state positionally: `push`
-stores `currentIndex + 1`, `replace` stores `currentIndex` unchanged. Comparing the index on
-`fromLocation` and `toLocation` gives the action with no extra subscription.
-
-A delta of `0` is a replace. Anything else is a push, back, or forward.
+❌ Route errors are not filtered by navigation type. A loader failure during a replace is still
+reported even though no `route_change` is emitted.
 
 ## Using with React
 
@@ -146,55 +126,18 @@ instrumentations: [
 ];
 ```
 
-❌ Do not pass `createReactRouterV6Options` or `withFaroRouterInstrumentation` from
+❌ Do not pass `createReactRouterV6Options`, or `withFaroRouterInstrumentation` from
 `@grafana/faro-react`. This package replaces the router half only.
 
 ## Framework support
 
-Instrumentation targets `@tanstack/router-core`, which the React, Solid, and Vue adapters
-all share. Router types are declared structurally rather than imported, so TanStack type
-changes do not break the build.
+Instrumentation targets `@tanstack/router-core`, which the React, Solid and Vue adapters all
+share.
 
-`src/integration.test.ts` is what verifies those structural types still match a real router.
-If TanStack changes shape, that test is where it surfaces.
+## Contributing
 
-## Development
-
-```bash
-npm install
-npm test
-npm run lint
-npm run typecheck
-npm run build
-npm run check:exports
-```
-
-`check:exports` runs [publint](https://publint.dev/) and
-[@arethetypeswrong/cli](https://arethetypeswrong.github.io/) against a packed tarball, so a
-broken `exports` map or a mismatched `.d.mts`/`.d.cts` pairing fails in CI rather than after
-publishing. It requires `npm run build` first.
-
-### Releases
-
-Releases are automated with [semantic-release](https://semantic-release.gitbook.io/). Merging
-to `main` runs the pipeline in `.github/workflows/release.yml`: it determines the next version
-from the commit messages, publishes to npm, cuts a GitHub release, and updates `CHANGELOG.md`.
-
-Publishing uses [npm trusted publishing](https://docs.npmjs.com/trusted-publishers) over OIDC,
-so there is no npm token stored in the repository. Every published version carries a signed
-provenance statement linking it to the commit and workflow run that built it.
-
-Commit messages must follow
-[Conventional Commits](https://www.conventionalcommits.org/). `fix:` cuts a patch, `feat:` a
-minor, and a `BREAKING CHANGE:` footer a major. Other prefixes such as `chore:` or `docs:`
-release nothing.
-
-✅ `feat: report not-found route matches`
-
-❌ `added not found support`
-
-`src/version.ts` is generated by `scripts/sync-version.mjs` during the release, from the
-version semantic-release writes into `package.json`. Do not edit it by hand.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup, the release process and design
+notes.
 
 ## License
 
