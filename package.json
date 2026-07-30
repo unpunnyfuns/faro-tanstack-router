@@ -1,8 +1,17 @@
 {
-  "name": "faro-tanstack-router",
-  "version": "0.1.0",
+  "name": "@unpunnyfuns/faro-tanstack-router",
+  "version": "0.0.0-development",
   "description": "Grafana Faro instrumentation for TanStack Router",
   "license": "MIT",
+  "author": "unpunnyfuns",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unpunnyfuns/faro-tanstack-router.git"
+  },
+  "homepage": "https://github.com/unpunnyfuns/faro-tanstack-router#readme",
+  "bugs": {
+    "url": "https://github.com/unpunnyfuns/faro-tanstack-router/issues"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -22,6 +31,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "faro",
     "grafana",
@@ -30,17 +42,23 @@
     "rum",
     "observability"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsdown src/index.ts --format esm,cjs --dts --clean",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "oxlint src",
     "format": "oxfmt src",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "sync-version": "node scripts/sync-version.mjs"
   },
-  "packageManager": "pnpm@10.33.0",
   "devDependencies": {
     "@grafana/faro-web-sdk": "^2.9.0",
+    "@semantic-release/changelog": "^7.0.0",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^11.0.1",
     "@tanstack/react-router": "^1.170.18",
     "@tanstack/router-core": "^1.171.15",
     "@testing-library/react": "^16.3.2",
@@ -51,6 +69,7 @@
     "oxlint": "^1.76.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "semantic-release": "^25.0.8",
     "tsdown": "^0.22.14",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"

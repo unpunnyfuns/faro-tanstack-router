@@ -28,7 +28,7 @@ export function warnNotInitialized(): void {
   hasWarnedNotInitialized = true;
 
   console.warn(
-    "[faro-tanstack-router] Dropping router events: TanStackRouterInstrumentation was not registered. Add it to the instrumentations array passed to initializeFaro().",
+    "[@unpunnyfuns/faro-tanstack-router] Dropping router events: TanStackRouterInstrumentation was not registered. Add it to the instrumentations array passed to initializeFaro().",
   );
 }
 

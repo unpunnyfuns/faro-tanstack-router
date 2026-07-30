@@ -5,7 +5,7 @@ import type { TanStackRouterInstrumentationOptions } from "./types";
 import { VERSION } from "./version";
 
 export class TanStackRouterInstrumentation extends BaseInstrumentation {
-  readonly name = "faro-tanstack-router";
+  readonly name = "@unpunnyfuns/faro-tanstack-router";
   readonly version = VERSION;
 
   private readonly instrumentationOptions: TanStackRouterInstrumentationOptions;

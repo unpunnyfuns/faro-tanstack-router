@@ -19,7 +19,7 @@ function shouldReportRoute(route: string): boolean {
     return predicate(route);
   } catch (err) {
     dependencies.internalLogger?.error(
-      "[faro-tanstack-router] shouldReportRoute threw, reporting the route anyway",
+      "[@unpunnyfuns/faro-tanstack-router] shouldReportRoute threw, reporting the route anyway",
       err,
     );
 

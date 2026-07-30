@@ -31,7 +31,7 @@ describe("TanStackRouterInstrumentation", () => {
   it("identifies itself", () => {
     const instrumentation = new TanStackRouterInstrumentation();
 
-    expect(instrumentation.name).toBe("faro-tanstack-router");
+    expect(instrumentation.name).toBe("@unpunnyfuns/faro-tanstack-router");
     expect(instrumentation.version).toBe(VERSION);
   });
 
