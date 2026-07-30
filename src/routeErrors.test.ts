@@ -70,6 +70,16 @@ describe("createRouteErrorReporter", () => {
     });
   });
 
+  it("describes the route when a failed match carries no error value", () => {
+    createRouteErrorReporter()(api, [match({ status: "error" })]);
+
+    expect(pushError).toHaveBeenCalledTimes(1);
+    expect(pushError.mock.calls[0]?.[0]).toBeInstanceOf(Error);
+    expect(pushError.mock.calls[0]?.[0].message).toBe(
+      "Route /posts/$postId failed without an error value",
+    );
+  });
+
   it("does not report the same match twice", () => {
     const report = createRouteErrorReporter();
     const matches = [match({ error: new Error("loader blew up") })];
