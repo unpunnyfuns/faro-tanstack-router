@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/unpunnyfuns/faro-tanstack-router/compare/v1.0.3...v1.0.4) (2026-07-30)
+
+
+### Bug Fixes
+
+* document the client-side Faro init required for TanStack Start ([0692158](https://github.com/unpunnyfuns/faro-tanstack-router/commit/0692158c134889751587b3c34f307b603a457a6c))
+
 ## [1.0.3](https://github.com/unpunnyfuns/faro-tanstack-router/compare/v1.0.2...v1.0.3) (2026-07-30)
 
 
