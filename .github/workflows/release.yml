@@ -24,12 +24,15 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # registry-url is deliberately omitted. It makes setup-node write an
+      # .npmrc containing a NODE_AUTH_TOKEN placeholder and point
+      # NPM_CONFIG_USERCONFIG at it, which semantic-release then treats as
+      # pre-existing auth and honours instead of NPM_TOKEN.
       - name: Set up Node
         uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
-          registry-url: https://registry.npmjs.org
 
       - name: Install
         run: npm ci
