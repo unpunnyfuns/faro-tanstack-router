@@ -180,6 +180,10 @@ Releases are automated with [semantic-release](https://semantic-release.gitbook.
 to `main` runs the pipeline in `.github/workflows/release.yml`: it determines the next version
 from the commit messages, publishes to npm, cuts a GitHub release, and updates `CHANGELOG.md`.
 
+Publishing uses [npm trusted publishing](https://docs.npmjs.com/trusted-publishers) over OIDC,
+so there is no npm token stored in the repository. Every published version carries a signed
+provenance statement linking it to the commit and workflow run that built it.
+
 Commit messages must follow
 [Conventional Commits](https://www.conventionalcommits.org/). `fix:` cuts a patch, `feat:` a
 minor, and a `BREAKING CHANGE:` footer a major. Other prefixes such as `chore:` or `docs:`
